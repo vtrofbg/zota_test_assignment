@@ -1,0 +1,35 @@
+version: '1.0'
+
+services:
+  go_app:
+    image: golang:1.24.3
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=my_db
+      - APP_LOG_DIR=./
+    working_dir: /go_app
+    volumes:
+      - ./go_app:/go_app 
+    ports:
+      - "8080:8080"
+    command: >
+      sh -c "go mod download && go run main.go storage_tools.go"
+#      sh -c "go mod download && go test -v"
+
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: my_db
+      MYSQL_ROOT_PASSWORD: 'root'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 3s
+      retries: 3
+    ports:
+      - "3306:3306"

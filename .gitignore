@@ -23,3 +23,7 @@ go.work.sum
 
 # env file
 .env
+
+# to exclude from project
+.vscode/
+go_app/my_app.log
